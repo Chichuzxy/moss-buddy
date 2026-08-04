@@ -17,11 +17,11 @@ const agent = new MossAgent(
 
 app.post("/api/chat", async (req, res) => {
   try {
-    const { message, history } = req.body;
+    const { message, history, walletAddress } = req.body;
     if (!message) {
       return res.status(400).json({ error: "message is required" });
     }
-    const result = await agent.chat(message, history || []);
+    const result = await agent.chat(message, history || [], walletAddress);
     res.json(result);
   } catch (err) {
     console.error("Chat error:", err);

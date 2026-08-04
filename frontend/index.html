@@ -189,12 +189,7 @@
       试试问我点什么吧！
     </div>
   </div>
-  <div class="suggestions">
-    <button onclick="sendSuggestion('帮我领点测试币，地址 0x1234...')">领测试币</button>
-    <button onclick="sendSuggestion('什么是 Gas 费？')">什么是 Gas 费</button>
-    <button onclick="sendSuggestion('查一下我的余额')">查余额</button>
-    <button onclick="sendSuggestion('什么是智能合约？')">什么是智能合约</button>
-  </div>
+  <div class="suggestions" id="suggestions"></div>
   <div id="input-area">
     <input id="user-input" type="text" placeholder="输入你的问题..." onkeydown="if(event.key==='Enter') send()">
     <button id="send-btn" onclick="send()">发送</button>
@@ -246,7 +241,7 @@
         const res = await fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: text, history })
+          body: JSON.stringify({ message: text, history, walletAddress })
         });
         const data = await res.json();
         hideTyping();
@@ -265,11 +260,48 @@
     }
 
     function sendSuggestion(text) {
+      if (walletAddress) {
+        text = text.replace("{addr}", walletAddress);
+      }
       inputEl.value = text;
       send();
     }
 
     let walletAddress = null;
+
+    const SUGGESTION_POOL = [
+      { label: "领测试币", text: walletAddress ? "领测试币，地址 {addr}" : "领测试币" },
+      { label: "查余额", text: "查一下我的余额" },
+      { label: "什么是 Gas 费", text: "什么是 Gas 费？" },
+      { label: "什么是 NFT", text: "什么是 NFT？" },
+      { label: "什么是 DeFi", text: "什么是 DeFi？" },
+      { label: "什么是智能合约", text: "什么是智能合约？" },
+      { label: "Monad 是什么", text: "Monad 是什么链？" },
+    ];
+    let suggestionIndex = 0;
+
+    function renderSuggestions() {
+      const container = document.getElementById("suggestions");
+      const pool = SUGGESTION_POOL.map(s => ({
+        label: s.label,
+        text: walletAddress ? s.text.replace("{addr}", walletAddress) : s.text
+      }));
+      const batch = [];
+      for (let i = 0; i < 4; i++) {
+        batch.push(pool[(suggestionIndex + i) % pool.length]);
+      }
+      container.innerHTML = batch.map(s =>
+        `<button onclick="sendSuggestion('${s.text.replace(/'/g, "\\'")}')">${s.label}</button>`
+      ).join("");
+    }
+
+    function rotateSuggestions() {
+      suggestionIndex = (suggestionIndex + 1) % SUGGESTION_POOL.length;
+      renderSuggestions();
+    }
+
+    renderSuggestions();
+    setInterval(rotateSuggestions, 8000);
 
     function toggleWallet() {
       const dd = document.getElementById("wallet-dropdown");
@@ -324,6 +356,7 @@
       btn.innerHTML = walletAddress.slice(0,6) + "..." + walletAddress.slice(-4);
       btn.style.color = "#4ade80";
       btn.style.borderColor = "#4ade8044";
+      renderSuggestions();
     }
 
     document.addEventListener("click", function(e) {

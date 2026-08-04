@@ -62,9 +62,13 @@ class MossAgent {
     };
   }
 
-  async chat(message, history = []) {
+  async chat(message, history = [], walletAddress = null) {
+    let systemPrompt = SYSTEM_PROMPT;
+    if (walletAddress) {
+      systemPrompt += `\n\n## 当前用户已连接钱包\n用户的钱包地址是: ${walletAddress}\n- 当用户说"领测试币""领水"但没有提供地址时，直接对这个地址调用 request_faucet\n- 当用户说"查余额""我的余额"时，直接对这个地址调用 query_chain balance\n- 当用户想让别人领水时，用对方提供的地址`;
+    }
     const messages = [
-      { role: "system", content: SYSTEM_PROMPT },
+      { role: "system", content: systemPrompt },
       ...history,
       { role: "user", content: message }
     ];
