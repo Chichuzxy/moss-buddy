@@ -269,6 +269,8 @@
       send();
     }
 
+    let walletAddress = null;
+
     function toggleWallet() {
       const dd = document.getElementById("wallet-dropdown");
       const btn = document.querySelector(".wallet-btn");
@@ -288,15 +290,40 @@
       document.querySelectorAll("#wallet-dropdown a").forEach(a => {
         const w = a.dataset.wallet;
         if (checks[w]) {
-          a.textContent = a.textContent.replace(/ .*$/, "") + " [Connected]";
-          a.style.color = "#4ade80";
-          a.onclick = (e) => { e.preventDefault(); };
+          a.textContent = a.textContent.replace(/ .*$/, "") + (walletAddress ? " [" + walletAddress.slice(0,6) + "..." + walletAddress.slice(-4) + "]" : " [Connect]");
+          a.style.color = walletAddress ? "#4ade80" : "#60a5fa";
+          a.onclick = async (e) => { e.preventDefault(); await connectWallet(w); };
         } else {
           a.textContent = a.textContent.replace(/ .*$/, "") + " [Install]";
           a.style.color = "#f59e0b";
           a.onclick = (e) => { e.preventDefault(); window.open(a.dataset.url, "_blank"); };
         }
       });
+    }
+
+    async function connectWallet(wallet) {
+      try {
+        const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+        if (accounts.length > 0) {
+          walletAddress = accounts[0];
+          updateWalletUI();
+          document.getElementById("wallet-dropdown").classList.remove("show");
+          document.querySelector(".wallet-btn").classList.remove("open");
+        }
+      } catch (err) {
+        if (err.code === 4001) {
+          alert("你拒绝了连接请求~");
+        } else {
+          alert("连接失败: " + err.message);
+        }
+      }
+    }
+
+    function updateWalletUI() {
+      const btn = document.querySelector(".wallet-btn");
+      btn.innerHTML = walletAddress.slice(0,6) + "..." + walletAddress.slice(-4);
+      btn.style.color = "#4ade80";
+      btn.style.borderColor = "#4ade8044";
     }
 
     document.addEventListener("click", function(e) {
