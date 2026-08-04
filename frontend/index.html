@@ -175,10 +175,10 @@
     <div class="wallet-links">
       <button class="wallet-btn" onclick="toggleWallet()">Wallets</button>
       <div class="wallet-dropdown" id="wallet-dropdown">
-        <a href="https://metamask.io/download/" target="_blank">MetaMask</a>
-        <a href="https://rabby.io/" target="_blank">Rabby</a>
-        <a href="https://www.okx.com/web3" target="_blank">OKX Wallet</a>
-        <a href="https://trustwallet.com/download" target="_blank">Trust Wallet</a>
+        <a href="#" data-wallet="metamask" data-url="https://metamask.io/download/">MetaMask</a>
+        <a href="#" data-wallet="rabby" data-url="https://rabby.io/">Rabby</a>
+        <a href="#" data-wallet="okx" data-url="https://www.okx.com/web3">OKX Wallet</a>
+        <a href="#" data-wallet="trust" data-url="https://trustwallet.com/download">Trust Wallet</a>
       </div>
     </div>
   </header>
@@ -272,8 +272,31 @@
     function toggleWallet() {
       const dd = document.getElementById("wallet-dropdown");
       const btn = document.querySelector(".wallet-btn");
-      dd.classList.toggle("show");
+      const isOpen = dd.classList.toggle("show");
       btn.classList.toggle("open");
+      if (isOpen) detectWallets();
+    }
+
+    function detectWallets() {
+      const ethereum = window.ethereum;
+      const checks = {
+        metamask: ethereum?.isMetaMask,
+        rabby: ethereum?.isRabby,
+        okx: !!window.okxwallet || ethereum?.isOkxWallet,
+        trust: ethereum?.isTrust
+      };
+      document.querySelectorAll("#wallet-dropdown a").forEach(a => {
+        const w = a.dataset.wallet;
+        if (checks[w]) {
+          a.textContent = a.textContent.replace(/ .*$/, "") + " [Connected]";
+          a.style.color = "#4ade80";
+          a.onclick = (e) => { e.preventDefault(); };
+        } else {
+          a.textContent = a.textContent.replace(/ .*$/, "") + " [Install]";
+          a.style.color = "#f59e0b";
+          a.onclick = (e) => { e.preventDefault(); window.open(a.dataset.url, "_blank"); };
+        }
+      });
     }
 
     document.addEventListener("click", function(e) {
