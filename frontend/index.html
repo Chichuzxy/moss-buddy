@@ -166,6 +166,34 @@
     }
     .suggestions button:hover { border-color: #7c3aed; color: #c0c0e0; }
     .typing { color: #7c3aed; font-size: 14px; padding: 8px 16px; }
+    .faucet-overlay {
+      display: none;
+      position: fixed;
+      top: 0; right: 0;
+      width: 420px;
+      height: 100vh;
+      background: #0d0d1a;
+      border-left: 1px solid #2a2a4a;
+      z-index: 100;
+      flex-direction: column;
+    }
+    .faucet-overlay.show { display: flex; }
+    .faucet-overlay .faucet-header {
+      padding: 12px 16px;
+      background: #13132b;
+      border-bottom: 1px solid #2a2a4a;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .faucet-overlay .faucet-header span { font-size: 14px; color: #a0a0c0; }
+    .faucet-overlay .faucet-header button {
+      background: none; border: none; color: #666; font-size: 18px; cursor: pointer;
+    }
+    .faucet-overlay iframe {
+      flex: 1;
+      border: none;
+    }
   </style>
 </head>
 <body>
@@ -175,10 +203,10 @@
     <div class="wallet-links">
       <button class="wallet-btn" onclick="toggleWallet()">Wallets</button>
       <div class="wallet-dropdown" id="wallet-dropdown">
-        <a href="#" data-wallet="metamask" data-url="https://metamask.io/download/">MetaMask</a>
-        <a href="#" data-wallet="rabby" data-url="https://rabby.io/">Rabby</a>
-        <a href="#" data-wallet="okx" data-url="https://www.okx.com/web3">OKX Wallet</a>
-        <a href="#" data-wallet="trust" data-url="https://trustwallet.com/download">Trust Wallet</a>
+        <a href="#" data-wallet="metamask" data-url="https://metamask.io/download/">🦊 MetaMask</a>
+        <a href="#" data-wallet="rabby" data-url="https://rabby.io/">🦝 Rabby</a>
+        <a href="#" data-wallet="okx" data-url="https://www.okx.com/web3">⭕ OKX Wallet</a>
+        <a href="#" data-wallet="trust" data-url="https://trustwallet.com/download">🛡️ Trust Wallet</a>
       </div>
     </div>
   </header>
@@ -194,6 +222,24 @@
     <input id="user-input" type="text" placeholder="输入你的问题..." onkeydown="if(event.key==='Enter') send()">
     <button id="send-btn" onclick="send()">发送</button>
   </div>
+  <div class="faucet-overlay" id="faucet-panel">
+    <div class="faucet-header">
+      <span>Monad Faucet</span>
+      <button onclick="closeFaucetPanel()" style="background:none;border:none;color:#666;font-size:18px;cursor:pointer">x</button>
+    </div>
+    <div id="faucet-hint" style="padding:10px 14px;font-size:13px;color:#a0a0c0;background:#13132b;border-bottom:1px solid #2a2a4a">
+      <span id="faucet-addr-text" style="color:#7c3aed">请先连接钱包</span>
+      <button id="faucet-copy-btn" onclick="copyAddress()" style="display:none;margin-left:8px;background:#1a1a3e;border:1px solid #2a2a4a;color:#a0a0c0;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:12px">copy</button>
+    </div>
+    <div style="padding:10px 14px;font-size:12px;color:#888;background:#0d0d1a;border-bottom:1px solid #2a2a4a;line-height:1.8">
+      <b style="color:#ccc">操作步骤：</b><br>
+      1. 在下方输入框粘贴地址（Enter wallet address）<br>
+      2. 勾选「我不是机器人」复选框（Cloudflare 验证）<br>
+      3. 按钮变亮后点击领取（Claim / Get Tokens）<br>
+      <span style="color:#666">每次可领 5 MON 测试币</span>
+    </div>
+    <iframe src="https://faucet.monad.xyz/" id="faucet-iframe"></iframe>
+  </div>
 
   <script>
     const chatEl = document.getElementById("chat");
@@ -204,12 +250,6 @@
     function addMsg(role, text, tools) {
       const div = document.createElement("div");
       div.className = `msg ${role}`;
-      if (tools && tools.length) {
-        const tag = document.createElement("span");
-        tag.className = "tool-tag";
-        tag.textContent = `tool: ${tools.join(", ")}`;
-        div.appendChild(tag);
-      }
       div.appendChild(document.createTextNode(text));
       chatEl.appendChild(div);
       chatEl.scrollTop = chatEl.scrollHeight;
@@ -251,7 +291,7 @@
           addMsg("assistant", data.content, data.usedTools);
           history.push({ role: "assistant", content: data.content });
           if (data.usedTools && data.usedTools.includes("request_faucet")) {
-            window.open("https://faucet.monad.xyz/", "_blank");
+            showFaucetPanel();
           }
         }
       } catch {
@@ -304,7 +344,7 @@
     }
 
     renderSuggestions();
-    setInterval(rotateSuggestions, 8000);
+    setInterval(rotateSuggestions, 300000);
 
     function toggleWallet() {
       const dd = document.getElementById("wallet-dropdown");
@@ -325,11 +365,11 @@
       document.querySelectorAll("#wallet-dropdown a").forEach(a => {
         const w = a.dataset.wallet;
         if (checks[w]) {
-          a.textContent = a.textContent.replace(/ .*$/, "") + (walletAddress ? " [" + walletAddress.slice(0,6) + "..." + walletAddress.slice(-4) + "]" : " [Connect]");
+          a.textContent = a.textContent.replace(/\s*\[.*\]$/, "") + (walletAddress ? " [" + walletAddress.slice(0,6) + "..." + walletAddress.slice(-4) + "]" : " [Connect]");
           a.style.color = walletAddress ? "#4ade80" : "#60a5fa";
           a.onclick = async (e) => { e.preventDefault(); await connectWallet(w); };
         } else {
-          a.textContent = a.textContent.replace(/ .*$/, "") + " [Install]";
+          a.textContent = a.textContent.replace(/\s*\[.*\]$/, "") + " [Install]";
           a.style.color = "#f59e0b";
           a.onclick = (e) => { e.preventDefault(); window.open(a.dataset.url, "_blank"); };
         }
@@ -360,6 +400,7 @@
       btn.style.color = "#4ade80";
       btn.style.borderColor = "#4ade8044";
       renderSuggestions();
+      updateFaucetHint();
     }
 
     document.addEventListener("click", function(e) {
@@ -368,6 +409,39 @@
         document.querySelector(".wallet-btn").classList.remove("open");
       }
     });
+
+    let faucetLang = "cn";
+
+    function showFaucetPanel() {
+      document.getElementById("faucet-iframe").src = "https://faucet.monad.xyz/";
+      document.getElementById("faucet-panel").classList.add("show");
+      updateFaucetHint();
+    }
+
+    function closeFaucetPanel() {
+      document.getElementById("faucet-panel").classList.remove("show");
+    }
+
+    function updateFaucetHint() {
+      const txt = document.getElementById("faucet-addr-text");
+      const btn = document.getElementById("faucet-copy-btn");
+      if (walletAddress) {
+        txt.textContent = walletAddress;
+        btn.style.display = "inline";
+      } else {
+        txt.textContent = "请先在顶部 Wallets 连接钱包";
+        btn.style.display = "none";
+      }
+    }
+
+    function copyAddress() {
+      if (walletAddress) {
+        navigator.clipboard.writeText(walletAddress);
+        const btn = document.getElementById("faucet-copy-btn");
+        btn.textContent = "copied!";
+        setTimeout(() => btn.textContent = "copy", 1500);
+      }
+    }
   </script>
 </body>
 </html>

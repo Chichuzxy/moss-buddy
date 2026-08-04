@@ -93,6 +93,7 @@ class MossAgent {
           try {
             const args = JSON.parse(call.function.arguments);
             const result = await handler(args);
+            console.log("Tool result:", call.function.name, JSON.stringify(result).slice(0, 200));
             toolResults.push({
               role: "tool",
               tool_call_id: call.id,
