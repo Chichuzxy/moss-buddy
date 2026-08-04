@@ -1,6 +1,6 @@
 const { ethers } = require("ethers");
 
-const RPC_URL = process.env.MONAD_RPC_URL || "https://testnet.monad.xyz";
+const RPC_URL = process.env.MONAD_RPC_URL || "https://testnet-rpc.monad.xyz";
 
 function getProvider() {
   return new ethers.JsonRpcProvider(RPC_URL);

@@ -250,6 +250,9 @@
         } else {
           addMsg("assistant", data.content, data.usedTools);
           history.push({ role: "assistant", content: data.content });
+          if (data.usedTools && data.usedTools.includes("request_faucet")) {
+            window.open("https://faucet.monad.xyz/", "_blank");
+          }
         }
       } catch {
         hideTyping();
