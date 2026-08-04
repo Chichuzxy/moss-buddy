@@ -38,21 +38,51 @@
     }
     .wallet-links {
       margin-left: auto;
-      display: flex;
-      gap: 8px;
-      align-items: center;
+      position: relative;
     }
-    .wallet-links span { font-size: 12px; color: #666; }
-    .wallet-links a {
+    .wallet-btn {
       font-size: 12px;
       color: #a0a0c0;
-      text-decoration: none;
-      padding: 4px 10px;
+      background: transparent;
       border: 1px solid #2a2a4a;
       border-radius: 8px;
+      padding: 4px 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
       transition: all 0.2s;
     }
-    .wallet-links a:hover { border-color: #7c3aed; color: #c0c0e0; background: #1a1a3e; }
+    .wallet-btn:hover { border-color: #7c3aed; color: #c0c0e0; }
+    .wallet-btn::after {
+      content: '\25BC';
+      font-size: 8px;
+      transition: transform 0.2s;
+    }
+    .wallet-btn.open::after { transform: rotate(180deg); }
+    .wallet-dropdown {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: calc(100% + 6px);
+      background: #13132b;
+      border: 1px solid #2a2a4a;
+      border-radius: 10px;
+      padding: 6px;
+      min-width: 140px;
+      z-index: 10;
+    }
+    .wallet-dropdown.show { display: block; }
+    .wallet-dropdown a {
+      display: block;
+      font-size: 13px;
+      color: #a0a0c0;
+      text-decoration: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      transition: all 0.15s;
+    }
+    .wallet-dropdown a:hover { background: #1a1a3e; color: #e0e0e0; }
     #chat {
       flex: 1;
       overflow-y: auto;
@@ -143,11 +173,13 @@
     <h1>Moss Buddy</h1>
     <span class="badge">Monad Testnet</span>
     <div class="wallet-links">
-      <span>Wallets:</span>
-      <a href="https://metamask.io/download/" target="_blank">MetaMask</a>
-      <a href="https://rabby.io/" target="_blank">Rabby</a>
-      <a href="https://www.okx.com/web3" target="_blank">OKX Wallet</a>
-      <a href="https://trustwallet.com/download" target="_blank">Trust Wallet</a>
+      <button class="wallet-btn" onclick="toggleWallet()">Wallets</button>
+      <div class="wallet-dropdown" id="wallet-dropdown">
+        <a href="https://metamask.io/download/" target="_blank">MetaMask</a>
+        <a href="https://rabby.io/" target="_blank">Rabby</a>
+        <a href="https://www.okx.com/web3" target="_blank">OKX Wallet</a>
+        <a href="https://trustwallet.com/download" target="_blank">Trust Wallet</a>
+      </div>
     </div>
   </header>
   <div id="chat">
@@ -236,6 +268,20 @@
       inputEl.value = text;
       send();
     }
+
+    function toggleWallet() {
+      const dd = document.getElementById("wallet-dropdown");
+      const btn = document.querySelector(".wallet-btn");
+      dd.classList.toggle("show");
+      btn.classList.toggle("open");
+    }
+
+    document.addEventListener("click", function(e) {
+      if (!e.target.closest(".wallet-links")) {
+        document.getElementById("wallet-dropdown").classList.remove("show");
+        document.querySelector(".wallet-btn").classList.remove("open");
+      }
+    });
   </script>
 </body>
 </html>
