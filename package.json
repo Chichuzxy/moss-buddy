@@ -1,0 +1,17 @@
+{
+  "name": "moss-buddy",
+  "version": "0.1.0",
+  "description": "AI companion for Monad ecosystem newcomers - natural language faucet, chain queries, and Web3 concept explanations",
+  "private": true,
+  "scripts": {
+    "dev": "node backend/server.js",
+    "start": "node backend/server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.0",
+    "cors": "^2.8.5",
+    "ethers": "^6.13.0",
+    "openai": "^4.70.0",
+    "dotenv": "^16.4.0"
+  }
+}
