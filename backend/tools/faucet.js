@@ -1,16 +1,8 @@
 async function requestFaucet({ address }) {
   return {
     success: true,
-    message: [
-      "领 Monad 测试币很简单，跟着做：",
-      "",
-      "1. 打开 https://faucet.monad.xyz/",
-      `2. 粘贴你的地址: ${address.slice(0,6)}...${address.slice(-4)}`,
-      "3. 完成人机验证（点一下复选框）",
-      "4. 点击领取，每次 5 MON",
-      "",
-      "提示：这是测试网的假币，只用于开发测试。"
-    ].join("\n")
+    address,
+    message: `右侧面板已弹出！你的地址已显示在上面，点击「打开水龙头领取」按钮，在新页面粘贴地址，完成验证就能领 5 MON。领完回来告诉我，帮你查余额确认！`
   };
 }
 
