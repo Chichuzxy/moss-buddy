@@ -1,53 +1,49 @@
 # Moss Buddy 测试文档
 
 ## 测试环境
-- 服务: http://localhost:3000
-- RPC: Monad Testnet (Chain ID 10143)
+- 本地: http://localhost:3000
+- 线上: https://moss-buddy.vercel.app
+- RPC: Monad Testnet (Chain ID 10143, 自动回退)
 - AI: OpenAI 兼容 API
 
 ## 功能测试
 
-### 1. 服务健康
-```bash
-curl http://localhost:3000/api/health
-```
-期望: `{"status":"ok","name":"Moss Buddy"}`
+### 1. AI 对话与概念解释
+输入: "什么是 Gas 费" / "什么是 NFT" / "什么是智能合约"
+期望: 返回生动比喻（如"加油费"），格式干净无 Markdown，usedTools 含 explain_concept
 
-### 2. 概念解释
-输入: "什么是 Gas 费"
-期望: 返回生动比喻的解释，usedTools 包含 `explain_concept`
-
-### 3. 余额查询
+### 2. 余额查询
 前置: 连接钱包
-输入: "帮我查一下钱包余额"
-期望: 返回余额数值，usedTools 包含 `query_chain`
+输入: "查余额" / "帮我查一下钱包余额"
+期望: 返回余额数值，usedTools 含 query_chain
+RPC 自动回退：错误 RPC 时切换到 testnet-rpc.monad.xyz
 
-### 4. 水龙头
+### 3. 水龙头引导
 前置: 连接钱包
 输入: "领测试币"
-期望: 侧边栏打开 faucet.monad.xyz，显示地址+复制按钮+中文操作指引，usedTools 包含 `request_faucet`
+期望: 右侧弹出暖色面板，显示完整地址 + 复制按钮 + 操作指引 + 打开水龙头按钮。关闭面板后聊天区恢复全宽。
 
-### 5. 前端页面
-打开 http://localhost:3000
-- 聊天界面正常加载
+### 4. 前端页面
+- 暖色奶油主题，橙色强调色
 - 提示词每 5 分钟轮换
-- 钱包下拉检测 MetaMask/Rabby/OKX/Trust Wallet
-- 连接后显示地址
-- 水龙头侧边栏显示中文操作指引 + 地址复制
+- 钱包下拉检测 MetaMask/Rabby/OKX/Trust Wallet（带 emoji 图标）
+- 连接后显示地址简写，提示词自动适配
+- 侧边栏打开时聊天区自动缩进
 
-### 6. RPC 自动回退
-`.env` 中设置错误 RPC，查询余额应自动回退到 `testnet-rpc.monad.xyz`
+### 5. 钱包集成
+- 未安装: 显示 [Install]（黄色），点击跳下载
+- 已安装: 显示 [Connect]（蓝色），点击弹授权窗口
+- 连接后: 显示地址简写（绿色），自动填入领水和查询
 
-## 已知问题
-- 水龙头无法完全自动化（需人工过 Cloudflare 验证）
-- curl 终端发送中文可能编码异常，建议浏览器测试
+## 已知限制
+- 水龙头需要人工完成 Cloudflare 验证（无法绕过）
+- vercel.app 国内访问受限（需 VPN）
 
 ## 测试结果
 | 项目 | 状态 | 备注 |
 |------|------|------|
-| 服务健康 | Pass | |
-| 概念解释 | Pass | |
-| 余额查询 | Pass | 54.78 MON |
-| 水龙头 | Pass | 侧边栏+中文指引+地址复制 |
-| 前端页面 | Pass | |
-| RPC 回退 | Pass | 自动切换可用节点 |
+| AI 概念解释 | Pass | 比喻生动，格式干净 |
+| 余额查询 | Pass | 25 MON，RPC 自动回退 |
+| 水龙头引导 | Pass | 侧边栏+地址+复制+按钮 |
+| 前端 UI | Pass | 暖色主题，响应式布局 |
+| 钱包集成 | Pass | 4 款钱包检测+连接 |
