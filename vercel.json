@@ -1,6 +1,11 @@
 {
   "buildCommand": "npm install",
   "outputDirectory": "frontend",
+  "functions": {
+    "api/chat.js": {
+      "maxDuration": 30
+    }
+  },
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/$1" }
   ]
