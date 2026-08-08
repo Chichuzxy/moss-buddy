@@ -72,3 +72,8 @@ npm run dev
 ## Monad Playground 黑客松
 
 参赛项目，eventId=14。目标：让 Web3 新手 30 秒内完成第一次链上交互。
+
+- Demo: https://moss-buddy.vercel.app
+- GitHub: https://github.com/Chichuzxy/moss-buddy
+- Pitch Deck: [Moss_Buddy_PPT.pptx](https://github.com/Chichuzxy/moss-buddy/blob/master/Moss_Buddy_PPT.pptx)
+- Demo 视频: [Moss Buddy.mp4](https://github.com/Chichuzxy/moss-buddy/blob/master/Moss%20Buddy%20.mp4)
