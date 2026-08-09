@@ -1,0 +1,128 @@
+{
+  "monad_overview": {
+    "title": "什么是 Monad",
+    "tags": [
+      "Monad",
+      "简介",
+      "Layer1",
+      "EVM",
+      "公链",
+      "介绍"
+    ],
+    "content": "Monad 是一个高性能 Layer-1 区块链，兼容 EVM。主网于 2025 年 11 月 24 日上线。TPS 达 10,000，区块时间 300ms，最终确认 600ms。核心技术包括 MonadBFT 共识、并行执行、异步执行、MonadDb 存储。",
+    "source": "https://docs.monad.xyz/"
+  },
+  "monad_vs_ethereum": {
+    "title": "Monad 与以太坊的区别",
+    "tags": [
+      "区别",
+      "以太坊",
+      "Ethereum",
+      "对比",
+      "性能"
+    ],
+    "content": "Monad 字节码完全兼容以太坊(Fusaka fork)。主要区别：(1) 区块时间：以太坊 12s，Monad 300ms；(2) 最终确认：以太坊 12-18min，Monad 600ms；(3) 最大合约大小：以太坊 24.5kb，Monad 128kb；(4) Gas 按 gas_limit 收取而非实际消耗；(5) 共识机制：MonadBFT vs Gasper。",
+    "source": "https://docs.monad.xyz/developer-essentials/differences"
+  },
+  "gas_pricing": {
+    "title": "Monad Gas 费用机制",
+    "tags": [
+      "Gas",
+      "gas",
+      "费用",
+      "手续费",
+      "gas_limit"
+    ],
+    "content": "Monad 兼容 EIP-1559。关键区别：按 gas_limit 收费而非实际消耗，公式为 value + gas_price * gas_limit。单笔交易 gas 上限 3000 万(30M)，区块 gas 上限 1.5 亿(150M)——前者是每笔交易的限制，后者是整个区块的容量。最低 base fee 为 100 MON-gwei。Gas 控制器比以太坊涨得更慢、降得更快。",
+    "source": "https://docs.monad.xyz/developer-essentials/gas-pricing"
+  },
+  "testnet_info": {
+    "title": "Monad 测试网信息",
+    "tags": [
+      "测试网",
+      "testnet",
+      "chain",
+      "Chain ID",
+      "RPC",
+      "水龙头",
+      "faucet"
+    ],
+    "content": "Monad Testnet Chain ID 为 10143。公共 RPC 端点：https://testnet-rpc.monad.xyz。水龙头：https://faucet.monad.xyz（需完成 Cloudflare 验证，领取 5 MON）。浏览器：https://monadvision.com。测试币无实际价值，仅用于开发测试。",
+    "source": "https://docs.monad.xyz/developer-essentials/network-information"
+  },
+  "transactions": {
+    "title": "Monad 交易格式",
+    "tags": [
+      "交易",
+      "transaction",
+      "EIP-1559",
+      "EIP-7702"
+    ],
+    "content": "Monad 支持交易类型 0(legacy)、1(EIP-2930)、2(EIP-1559，默认)、4(EIP-7702)。不支持类型 3(EIP-4844)。地址空间与以太坊相同(ECDSA)。钱包兼容 MetaMask 等以太坊钱包，只需切换 RPC URL 和 Chain ID。",
+    "source": "https://docs.monad.xyz/introduction/monad-for-developers"
+  },
+  "smart_contracts": {
+    "title": "Monad 智能合约",
+    "tags": [
+      "合约",
+      "智能合约",
+      "Solidity",
+      "部署",
+      "contract",
+      "opcode"
+    ],
+    "content": "Monad 支持 Fusaka fork 全部 opcode。额外预编译：0x0100(P256 签名验证)和 0x1000(质押)。合约最大 128kb。部分 opcode 重新定价以匹配 Monad 资源特征。推荐 Foundry(Monad fork)或 Viem(>=2.40.0)进行开发。",
+    "source": "https://docs.monad.xyz/developer-essentials/summary"
+  },
+  "deployment_guide": {
+    "title": "如何在 Monad 上部署合约",
+    "tags": [
+      "部署",
+      "deploy",
+      "Foundry",
+      "Hardhat",
+      "开发",
+      "Remix"
+    ],
+    "content": "部署步骤：(1) 获取 MON 测试币(水龙头)；(2) 安装 Foundry 的 Monad fork 或 Viem(>=2.40.0)；(3) 配置 RPC: https://testnet-rpc.monad.xyz, Chain ID: 10143；(4) 确保 Solidity 合约用 Fusaka 目标编译；(5) gas_limit 设 30M(3000 万)以内——这是单笔交易的硬上限，不是区块上限(150M)。",
+    "source": "https://docs.monad.xyz/developer-essentials/summary"
+  },
+  "architecture": {
+    "title": "Monad 架构亮点",
+    "tags": [
+      "架构",
+      "MonadBFT",
+      "并行",
+      "parallel",
+      "异步",
+      "consensus"
+    ],
+    "content": "五大创新：(1) MonadBFT - 解决 tail-forking 问题的 BFT 共识；(2) RaptorCast - 高效区块传播；(3) 异步执行 - 共识与执行流水线化；(4) 并行执行 + JIT 编译 - 高效交易处理；(5) MonadDb - 以太坊状态高效存储。代码 C++/Rust 编写，GPL-3.0 开源。",
+    "source": "https://docs.monad.xyz/"
+  },
+  "wallets": {
+    "title": "Monad 钱包支持",
+    "tags": [
+      "钱包",
+      "MetaMask",
+      "wallet",
+      "连接",
+      "Rabby",
+      "OKX"
+    ],
+    "content": "Monad 完全兼容以太坊钱包。支持 MetaMask、Rabby、OKX Wallet、Trust Wallet 等。只需添加自定义网络：RPC URL 为 https://testnet-rpc.monad.xyz(测试网)，Chain ID 10143，货币符号 MON。主网 Chain ID 不同，请查官方文档。",
+    "source": "https://docs.monad.xyz/introduction/monad-for-developers"
+  },
+  "mainnet_info": {
+    "title": "Monad 主网信息",
+    "tags": [
+      "主网",
+      "mainnet",
+      "Chain ID",
+      "上线",
+      "RPC"
+    ],
+    "content": "Monad 主网于 2025 年 11 月 24 日上线。主网 Chain ID 与测试网(10143)不同，详见官方 Network Information 页面。公共 RPC、浏览器 MonadVision、网络可视化 gmonads.com 均已可用。当前版本 v0.15.1。",
+    "source": "https://docs.monad.xyz/developer-essentials/network-information"
+  }
+}

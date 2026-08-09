@@ -49,7 +49,22 @@ const EXPLAIN_TOOL = {
   }
 };
 
-const TOOLS = [FAUCET_TOOL, QUERY_TOOL, EXPLAIN_TOOL];
+const DOCS_TOOL = {
+  type: "function",
+  function: {
+    name: "search_docs",
+    description: "搜索 Monad 官方文档，查找技术细节、网络参数、部署指南等。适用于需要精确技术答案的问题。",
+    parameters: {
+      type: "object",
+      properties: {
+        query: { type: "string", description: "搜索关键词，如 'gas'、'测试网'、'部署'、'合约大小' 等" }
+      },
+      required: ["query"]
+    }
+  }
+};
+
+const TOOLS = [FAUCET_TOOL, QUERY_TOOL, EXPLAIN_TOOL, DOCS_TOOL];
 
 class MossAgent {
   constructor(apiKey, baseURL, model) {
@@ -58,7 +73,8 @@ class MossAgent {
     this.toolHandlers = {
       request_faucet: require("../tools/faucet"),
       query_chain: require("../tools/query"),
-      explain_concept: require("../tools/explain")
+      explain_concept: require("../tools/explain"),
+      search_docs: require("../tools/docs")
     };
   }
 
