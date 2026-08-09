@@ -4,10 +4,11 @@
 
 ## 解决的问题
 
-Web3 新手面临三大门槛：
+Web3 新手面临四大门槛：
 1. 领测试币流程复杂，不知道去哪领
 2. 查询链上状态需要学区块浏览器和 RPC
 3. Web3 术语（Gas、DeFi、NFT）晦涩难懂
+4. Monad 技术参数散落在英文文档中，中文新手难以查阅
 
 Moss Buddy 用对话式 AI 一站式解决。
 
@@ -22,6 +23,9 @@ Moss Buddy 用对话式 AI 一站式解决。
 ### 3. 大白话概念解释
 用生动比喻解释 Web3 概念："Gas 费就是加油费"、"私钥是家门钥匙"。5+ 内置比喻，AI 可动态扩展。
 
+### 4. Monad 官方文档搜索
+问"Monad TPS 多少""和以太坊什么区别""怎么部署合约"，AI 自动从 Monad 官方文档知识库检索，返回精确数据。9 个主题覆盖概述、Gas、测试网、合约、交易、架构等。
+
 ## 技术架构
 
 ```
@@ -34,6 +38,8 @@ backend/
     faucet.js      # 水龙头引导工具
     query.js       # 链上查询（fetch 直连 RPC，自动回退）
     explain.js     # 概念解释工具
+    docs.js        # Monad 官方文档搜索（关键词匹配）
+    docs_kb.json   # 文档知识库（9 个主题）
 api/
   chat.js          # Vercel serverless - POST /api/chat
   health.js        # Vercel serverless - GET /api/health
@@ -68,6 +74,20 @@ npm run dev
 - 温暖友好的橙色调，降低新手焦虑
 - 禁止 Markdown 加粗，干净自然的回复格式
 - 中文操作指引覆盖英文水龙头页面
+
+## 下一步计划
+
+### 官方文档搜索（已实现）
+
+search_docs 工具已上线，基于 Monad 官方文档的关键词匹配搜索。9 个主题覆盖概述、Gas、测试网、合约、交易、架构、钱包等。下一步可升级为向量检索 RAG，支持语义搜索和文档溯源。
+
+### 合约交互
+
+不止查余额，支持调用 Monad 测试网合约方法。
+
+### 本地模型
+
+用 Ollama 替换 OpenAI API，降低运营成本，支持离线使用。
 
 ## Monad Playground 黑客松
 
